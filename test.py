@@ -9,6 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from tensorflow.keras.callbacks import ModelCheckpoint,EarlyStopping
+from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.backend import clear_session
@@ -17,9 +18,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random as rd
 print(f"@@@@@@@@ Start time: {datetime.now()}@@@@@@@@@@@")
-K_client_num=100
+K_client_num=50
 S_round=30  #총 라운드 수
-IS_DATA_CSV_EXIST=1
+k1=60
+k2=1
+IS_DATA_CSV_EXIST=0
 
 #데이터(MNIST) 불러오고 전처리
 #데이터 가져오고 합쳐서 70,000개로 합치고 각각 리스트로 나누고 6000개씩 뽑기
@@ -123,9 +126,9 @@ after_time=datetime.now()
 
 #env loop start>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 env_num=0
-env_start_num=8
-env_setting=[[10,1],[10,5],[10,20],[50,1],[50,5],[50,20],[600,1],[600,5],[600,20]]
-for env_num in range(env_start_num,9):
+env_start_num=1
+env_setting=[[20,k2]]
+for env_num in range(env_start_num):
     B_batch=env_setting[env_num][0] # 배치 사이즈
     E_epoch=env_setting[env_num][1]  # 각 클라이언트마다 몇 에포크 돌릴지
     print(f"###########B_batch={env_setting[env_num][0]}\n###########E_epoch={env_setting[env_num][1]}")
@@ -143,7 +146,7 @@ for env_num in range(env_start_num,9):
     #server_model.summary()                                                
 
     # 모델 실행 환경을 설정
-    server_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    server_model.compile(loss='categorical_crossentropy', optimizer=SGD(lr=0.01, momentum=0.995), metrics=['accuracy'])
 
     # 모델 최적화를 위한 설정 구간
     '''serverpath="./MNIST_MLP_0.hdf5"
@@ -170,7 +173,7 @@ for env_num in range(env_start_num,9):
     #clients_model.summary()                    
     
     # 모델 실행 환경을 설정
-    clients_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    clients_model.compile(loss='categorical_crossentropy', optimizer=SGD(lr=0.01, momentum=0.995), metrics=['accuracy'])
 
     # 모델 최적화를 위한 설정 구간
     '''clients_path.append("./MNIST_MLP_"+str(i)+".hdf5")
