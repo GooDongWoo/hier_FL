@@ -72,30 +72,30 @@ y_test = to_categorical(y_test, 10)
 
 # 할당하는 과정
 if not(IS_DATA_CSV_EXIST):
-    x_per_label=20
-    data_label_list=[0,1,2,3,4,5,6,7,8,9]
-    list_added_label_num=[0]*10
+    x_per_label=20  #각 라벨당 몇개씩 할당할지(1piece가 300개로 되어있음)
+    data_label_list=[0,1,2,3,4,5,6,7,8,9] # mnist에서 0~9까지의 라벨링된 데이터 리스트
+    list_added_label_num=[0]*10 # 각 라벨당 몇개씩 추가했는지
     last_label_left=-1# 마지막으로 1개밖에 안남은 라벨 숫자
 
-    list_combinational=[]
-    list_added_label_idx=[]
+    list_combinational=[] # 어떤 라벨들이 합쳐졌는지
+    list_added_label_idx=[] # 총 clients만큼 데이터 idx 리스트
     for iter in range(x_per_label*5):
         while 1:
-            if len(data_label_list)<=1:
+            if len(data_label_list)<=1: # 남은 라벨이 1개만 있으면 그걸로 나머지 채우기
                 last_label_left=list_added_label_num[data_label_list[0]]
                 what_last_num=data_label_list[0]
                 break
 
-            temp_pick2=rd.sample(data_label_list,2)
+            temp_pick2=rd.sample(data_label_list,2)# 랜덤으로 두개 뽑기
 
-            if (list_added_label_num[temp_pick2[0]]==x_per_label) or (list_added_label_num[temp_pick2[1]]==x_per_label):
-                if (list_added_label_num[temp_pick2[0]]==x_per_label):
+            if (list_added_label_num[temp_pick2[0]]==x_per_label) or (list_added_label_num[temp_pick2[1]]==x_per_label): # 뽑은 두개중 하나라도 이미 20개를 채웠으면 그 라벨은 빼버리기
+                if (list_added_label_num[temp_pick2[0]]==x_per_label): 
                     data_label_list.remove(temp_pick2[0])
                 if (list_added_label_num[temp_pick2[1]]==x_per_label):
                     data_label_list.remove(temp_pick2[1])
                 continue
             
-            list_added_label_idx.append([temp_pick2[0]*6000+list_added_label_num[temp_pick2[0]]*300,temp_pick2[1]*6000+list_added_label_num[temp_pick2[1]]*300])
+            list_added_label_idx.append([temp_pick2[0]*6000+list_added_label_num[temp_pick2[0]]*300,temp_pick2[1]*6000+list_added_label_num[temp_pick2[1]]*300])# 뽑은 두개의 라벨을 개수를 카운트하고 그 idx를 리스트에 추가
             list_combinational.append(temp_pick2)
 
             list_added_label_num[temp_pick2[0]]+=1
@@ -114,7 +114,8 @@ if not(IS_DATA_CSV_EXIST):
     print(list_added_label_num)
     print(list_added_label_idx)
     print(last_label_left_set)
-else:
+    print(f"#########@@@@@@@@@@@@ DATA DON'T EXIST@@@@@@@@@@@@@@#########")
+else: #이미 데이터가 존재할때
     list_added_label_idx=[[48000, 36000], [6000, 30000], [0, 48300], [300, 30300], [24000, 30600], [48600, 24300], [12000, 30900], [42000, 12300], [42300, 24600], [31200, 24900], [18000, 54000], [600, 36300], [900, 18300], [25200, 1200], [54300, 1500], [18600, 48900], [6300, 25500], [12600, 31500], [1800, 25800], [31800, 2100], [54600, 12900], [49200, 18900], [32100, 19200], [36600, 6600], [19500, 42600], [54900, 6900], [19800, 2400], [49500, 32400], [42900, 7200], [43200, 13200], [32700, 13500], [33000, 2700], [7500, 55200], [49800, 13800], [7800, 36900], [8100, 33300], [50100, 55500], [8400, 20100], [55800, 50400], [20400, 26100], [8700, 43500], [43800, 56100], [50700, 56400], [56700, 3000], [37200, 20700], [3300, 37500], [3600, 14100], [57000, 14400], [26400, 14700], [21000, 9000], [44100, 15000], [21300, 57300], [3900, 51000], [9300, 51300], [21600, 4200], [21900, 26700], [9600, 51600], [15300, 51900], [9900, 4500], [52200, 33600], [52500, 57600], [10200, 4800], [5100, 33900], [27000, 52800], [57900, 5400], [44400, 15600], [53100, 58200], [22200, 15900], [22500, 44700], [5700, 22800], [58500, 37800], [45000, 27300], [34200, 10500], [53400, 23100], [10800, 45300], [45600, 58800], [27600, 11100], [23400, 27900], [28200, 59100], [38100, 28500], [45900, 38400], [46200, 16200], [11400, 53700], [28800, 11700], [59400, 23700], [46500, 38700], [59700, 46800], [47100, 39000], [47400, 39300], [39600, 47700], [16500, 34500], [29100, 39900], [16800, 34800], [35100, 17100], [17400, 40200], [29400, 40500], [29700, 40800], [17700, 35400], [35700, 41100], [41400, 41700]]
     print(f"#########@@@@@@@@@@@@ DATA EXIST@@@@@@@@@@@@@@#########")
     print(list_added_label_idx)    
