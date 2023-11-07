@@ -73,13 +73,14 @@ y_test = to_categorical(y_test, 10)
 # 할당하는 과정
 if not(IS_DATA_CSV_EXIST):
     x_per_label=20  #각 라벨당 몇개씩 할당할지(1piece가 300개로 되어있음)
+    data_piece_unit=300 #데이터 1piece가 300개로 되어있음
     data_label_list=[0,1,2,3,4,5,6,7,8,9] # mnist에서 0~9까지의 라벨링된 데이터 리스트
     list_added_label_num=[0]*10 # 각 라벨당 몇개씩 추가했는지
     last_label_left=-1# 마지막으로 1개밖에 안남은 라벨 숫자
 
-    list_combinational=[] # 어떤 라벨들이 합쳐졌는지
+    list_combinational=[] # 뽑은 모든 2개 조합
     list_added_label_idx=[] # 총 clients만큼 데이터 idx 리스트
-    for iter in range(x_per_label*5):
+    for iter in range(K_client_num): #클라이언트가 100명이니까 100번 돌렸음
         while 1:
             if len(data_label_list)<=1: # 남은 라벨이 1개만 있으면 그걸로 나머지 채우기
                 last_label_left=list_added_label_num[data_label_list[0]]
@@ -95,7 +96,7 @@ if not(IS_DATA_CSV_EXIST):
                     data_label_list.remove(temp_pick2[1])
                 continue
             
-            list_added_label_idx.append([temp_pick2[0]*6000+list_added_label_num[temp_pick2[0]]*300,temp_pick2[1]*6000+list_added_label_num[temp_pick2[1]]*300])# 뽑은 두개의 라벨을 개수를 카운트하고 그 idx를 리스트에 추가
+            list_added_label_idx.append([temp_pick2[0]*6000+list_added_label_num[temp_pick2[0]]*data_piece_unit,temp_pick2[1]*6000+list_added_label_num[temp_pick2[1]]*data_piece_unit])# 뽑은 두개의 라벨을 개수를 카운트하고 그 idx를 리스트에 추가
             list_combinational.append(temp_pick2)
 
             list_added_label_num[temp_pick2[0]]+=1
@@ -107,7 +108,7 @@ if not(IS_DATA_CSV_EXIST):
     if (last_label_left!=-1):
         last_label_left_set=(20-last_label_left)/2
         for i______ in range(int(last_label_left_set)):
-            list_added_label_idx.append([what_last_num*6000+list_added_label_num[what_last_num]*300,what_last_num*6000+(list_added_label_num[what_last_num]+1)*300])
+            list_added_label_idx.append([what_last_num*6000+list_added_label_num[what_last_num]*data_piece_unit,what_last_num*6000+(list_added_label_num[what_last_num]+1)*data_piece_unit])
             list_added_label_num[what_last_num]+=2
 
     print(list_combinational)
