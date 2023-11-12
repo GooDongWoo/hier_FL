@@ -10,6 +10,6 @@
 
 
 hostname
-python test.py
+python HierFL/hierfavg.py
 exit 0
 
